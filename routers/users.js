@@ -1,5 +1,6 @@
 import mysql from 'mysql2';
 import {Router} from 'express';
+import validate from '../controllers/usersController.js';
 const storageGbpUsers = Router();
 let con = undefined;
 
@@ -10,20 +11,18 @@ storageGbpUsers.use((req, res, next) => {
     next();
 })
 
-storageGbpUsers.get("/users", (req, res) => {
+storageGbpUsers.get("/", (req, res) => {
     con.query(
-        /*sql*/
         `SELECT * FROM users`,
         (err, data, fil) => {
             res.send(JSON.stringify(data));
         }
     );
 })
-storageGbpUsers.get("/users/:id", (req, res) => {
+storageGbpUsers.get("/:id", (req, res) => {
     const id = req.params.id;
 
     con.query(
-        /*sql*/
         `SELECT * FROM users WHERE id = ?`, [id],
         (err, data, fil) => {
             if (err) {
@@ -36,7 +35,7 @@ storageGbpUsers.get("/users/:id", (req, res) => {
     );
 });
 
-storageGbpUsers.post("/users", (req, res) => {
+storageGbpUsers.post("/", (req, res) => {
     const {id,nombre,email,email_verified_at,estado,created_by,update_by,foto,password,created_at,updated_at,deleted_at} = req.body;
     con.query(
         /*sql*/
@@ -52,7 +51,7 @@ storageGbpUsers.post("/users", (req, res) => {
         }
     );
 });
-storageGbpUsers.put("/users/:id", (req, res) => {
+storageGbpUsers.put("/:id", (req, res) => {
     const id = req.params.id;
     const {nombre,email,email_verified_at,estado,created_by,update_by,foto,password,created_at,updated_at,deleted_at} = req.body;
     con.query(
@@ -69,7 +68,7 @@ storageGbpUsers.put("/users/:id", (req, res) => {
         }
     );
 });
-storageGbpUsers.delete("/users/:id", (req, res) => {
+storageGbpUsers.delete("/:id", (req, res) => {
     const id = req.params.id;
     con.query(
         /*sql*/
@@ -86,5 +85,6 @@ storageGbpUsers.delete("/users/:id", (req, res) => {
     );
 });
 
+storageGbpUsers.get("/", validate);
 
 export default storageGbpUsers;

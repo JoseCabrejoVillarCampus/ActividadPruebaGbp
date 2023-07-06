@@ -1,5 +1,6 @@
 import mysql from 'mysql2';
 import {Router} from 'express';
+import validate from '../controllers/inventariosController.js';
 const storageGbpInventarios = Router();
 let con = undefined;
 
@@ -10,9 +11,8 @@ storageGbpInventarios.use((req, res, next) => {
     next();
 })
 
-storageGbpInventarios.get("/inventarios", (req, res) => {
+/* storageGbpInventarios.get("/", (req, res) => {
     con.query(
-        /*sql*/
         `SELECT inventarios.*, bodegas.nombre AS nombre_bodega, productos.nombre AS nombre_producto 
         FROM inventarios
         INNER JOIN bodegas ON inventarios.id_bodega = bodegas.id
@@ -28,11 +28,9 @@ storageGbpInventarios.get("/inventarios", (req, res) => {
     );
 });
 
-storageGbpInventarios.get("/inventarios/:id", (req, res) => {
+storageGbpInventarios.get("/:id", (req, res) => {
     const id = req.params.id;
-
     con.query(
-        /*sql*/
         `SELECT inventarios.*, bodegas.nombre AS nombre_bodega, productos.nombre AS nombre_producto 
         FROM inventarios
         INNER JOIN bodegas ON inventarios.id_bodega = bodegas.id
@@ -47,10 +45,10 @@ storageGbpInventarios.get("/inventarios/:id", (req, res) => {
             }
         }
     );
-});
+}); */
 
 
-storageGbpInventarios.post("/inventarios", (req, res) => {
+storageGbpInventarios.post("/", (req, res) => {
     const {id,id_bodega,id_producto,cantidad,created_by,update_by,created_at,updated_at,deleted_at} = req.body;
     con.query(
         /*sql*/
@@ -66,7 +64,7 @@ storageGbpInventarios.post("/inventarios", (req, res) => {
         }
     );
 });
-storageGbpInventarios.put("/inventarios/:id", (req, res) => {
+storageGbpInventarios.put("/:id", (req, res) => {
     const id = req.params.id;
     const {id_bodega,id_producto,cantidad,created_by,update_by,created_at,updated_at,deleted_at} = req.body;
     con.query(
@@ -83,7 +81,7 @@ storageGbpInventarios.put("/inventarios/:id", (req, res) => {
         }
     );
 });
-storageGbpInventarios.delete("/inventarios/:id", (req, res) => {
+storageGbpInventarios.delete("/:id", (req, res) => {
     const id = req.params.id;
     con.query(
         /*sql*/
@@ -100,5 +98,6 @@ storageGbpInventarios.delete("/inventarios/:id", (req, res) => {
     );
 });
 
+storageGbpInventarios.get("/", validate);
 
 export default storageGbpInventarios;

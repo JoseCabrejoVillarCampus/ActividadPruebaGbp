@@ -1,5 +1,6 @@
 import mysql from 'mysql2';
 import {Router} from 'express';
+import validate from '../controllers/bodegasController.js';
 const storageGbpBodegas = Router();
 let con = undefined;
 
@@ -10,9 +11,9 @@ storageGbpBodegas.use((req, res, next) => {
     next();
 })
 
-storageGbpBodegas.get("/bodegas", (req, res) => {
+/* storageGbpBodegas.get("/", (req, res) => {
     con.query(
-        /*sql*/
+
         `SELECT bodegas.*, users.nombre AS responsable_nombre
         FROM bodegas
         INNER JOIN users ON bodegas.id_responsable = users.id`,
@@ -27,11 +28,10 @@ storageGbpBodegas.get("/bodegas", (req, res) => {
     );
 });
 
-storageGbpBodegas.get("/bodegas/:id", (req, res) => {
+storageGbpBodegas.get("/:id", (req, res) => {
     const id = req.params.id;
 
     con.query(
-        /*sql*/
         `SELECT bodegas.*, users.nombre AS responsable_nombre
         FROM bodegas
         INNER JOIN users ON bodegas.id_responsable = users.id
@@ -45,9 +45,9 @@ storageGbpBodegas.get("/bodegas/:id", (req, res) => {
             }
         }
     );
-});
+}); */
 
-storageGbpBodegas.post("/bodegas", (req, res) => {
+storageGbpBodegas.post("/", (req, res) => {
     const {id,nombre,id_responsable,estado,created_by,update_by,created_at,updated_at,deleted_at} = req.body;
     con.query(
         /*sql*/
@@ -63,7 +63,7 @@ storageGbpBodegas.post("/bodegas", (req, res) => {
         }
     );
 });
-storageGbpBodegas.put("/bodegas/:id", (req, res) => {
+storageGbpBodegas.put("/:id", (req, res) => {
     const id = req.params.id;
     const {nombre,id_responsable,estado,created_by,update_by,created_at,updated_at,deleted_at} = req.body;
     con.query(
@@ -80,7 +80,7 @@ storageGbpBodegas.put("/bodegas/:id", (req, res) => {
         }
     );
 });
-storageGbpBodegas.delete("/bodegas/:id", (req, res) => {
+storageGbpBodegas.delete("/:id", (req, res) => {
     const id = req.params.id;
     con.query(
         /*sql*/
@@ -97,5 +97,6 @@ storageGbpBodegas.delete("/bodegas/:id", (req, res) => {
     );
 });
 
+storageGbpBodegas.get("/", validate);
 
 export default storageGbpBodegas;

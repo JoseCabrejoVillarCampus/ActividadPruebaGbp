@@ -1,5 +1,6 @@
 import mysql from 'mysql2';
 import {Router} from 'express';
+import  validate from '../controllers/productosController.js';
 const storageGbpProductos = Router();
 let con = undefined;
 
@@ -9,64 +10,7 @@ storageGbpProductos.use((req, res, next) => {
     con = mysql.createPool(myConfig)
     next();
 })
-
-storageGbpProductos.get("/productos", (req, res) => {
-    con.query(
-        /*sql*/
-        `SELECT productos.*, users.created_by AS created_by, users.update_by AS update_by 
-        FROM productos
-        INNER JOIN users ON productos.created_by = users.id `,
-        (err, data, fil) => {
-            if (err) {
-                console.error('Error al obtener los productos:', err.message);
-                res.sendStatus(500);
-            } else {
-                res.send(JSON.stringify(data));
-            }
-        }
-    );
-});
-
-storageGbpProductos.get("/productos/:id", (req, res) => {
-    const id = req.params.id;
-
-    con.query(
-        /*sql*/
-        `SELECT productos.*, users.created_by AS created_by, users.update_by AS update_by 
-        FROM productos
-        INNER JOIN users ON productos.created_by = users.id 
-        WHERE productos.id = ?`, [id],
-        (err, data, fil) => {
-            if (err) {
-                console.error('Error al obtener el producto:', err.message);
-                res.sendStatus(500);
-            } else {
-                res.send(JSON.stringify(data));
-            }
-        }
-    );
-});
-storageGbpProductos.get("/productos/total", (req, res) => {
-    con.query(
-        /*sql*/
-        `SELECT productos.*, SUM(inventarios.cantidad) AS Total
-        FROM productos
-        INNER JOIN inventarios ON productos.id = inventarios.id_producto
-        GROUP BY productos.id
-        ORDER BY Total DESC`,
-        (err, data, fil) => {
-            if (err) {
-                console.error('Error al obtener los productos:', err.message);
-                res.sendStatus(500);
-            } else {
-                res.send(JSON.stringify(data));
-            }
-        }
-    );
-});
-
-
-storageGbpProductos.post("/productos", (req, res) => {
+storageGbpProductos.post("/", (req, res) => {
     const {id,nombre,descripcion,estado,created_by,update_by,created_at,updated_at,deleted_at} = req.body;
     con.query(
         /*sql*/
@@ -82,7 +26,7 @@ storageGbpProductos.post("/productos", (req, res) => {
         }
     );
 });
-storageGbpProductos.put("/productos/:id", (req, res) => {
+storageGbpProductos.put("/:id", (req, res) => {
     const id = req.params.id;
     const {nombre,descripcion,estado,created_by,update_by,created_at,updated_at,deleted_at} = req.body;
     con.query(
@@ -99,7 +43,7 @@ storageGbpProductos.put("/productos/:id", (req, res) => {
         }
     );
 });
-storageGbpProductos.delete("/productos/:id", (req, res) => {
+storageGbpProductos.delete("/:id", (req, res) => {
     const id = req.params.id;
     con.query(
         /*sql*/
@@ -115,6 +59,64 @@ storageGbpProductos.delete("/productos/:id", (req, res) => {
         }
     );
 });
+
+
+
+
+
+/* let validate = (req, res)=>{
+
+    if(!req.query.hasOwnProperty("id") && !req.query.hasOwnProperty("desc")){
+        con.query(
+            `SELECT productos.*, users.created_by AS created_by, users.update_by AS update_by 
+            FROM productos
+            INNER JOIN users ON productos.created_by = users.id `,
+            (err, data, fil) => {
+                if (err) {
+                    console.error('Error al obtener los productos:', err.message);
+                    res.sendStatus(500);
+                } else {
+                    res.send(JSON.stringify(data));
+                }
+            }
+        );
+    }else if(req.query.id){
+        const id = req.query.id;
+        con.query(
+            `SELECT productos.*, users.created_by AS created_by, users.update_by AS update_by 
+            FROM productos
+            INNER JOIN users ON productos.created_by = users.id 
+            WHERE productos.id = ?`, [id],
+            (err, data, fil) => {
+                if (err) {
+                    console.error('Error al obtener el producto:', err.message);
+                    res.sendStatus(500);
+                } else {
+                    res.send(JSON.stringify(data));
+                }
+            }
+        );
+    }else if(!req.query.desc){
+        con.query(
+            `SELECT productos.*, SUM(inventarios.cantidad) AS Total
+            FROM productos
+            INNER JOIN inventarios ON productos.id = inventarios.id_producto
+            GROUP BY productos.id
+            ORDER BY Total DESC;`,
+            (err, data, fil) => {
+                if (err) {
+                    console.error('Error al obtener los productos:', err.message);
+                    res.sendStatus(500);
+                } else {
+                    res.json(data);
+                }
+            }
+        );
+    }
+} */
+
+
+storageGbpProductos.get("/", validate);
 
 
 export default storageGbpProductos;

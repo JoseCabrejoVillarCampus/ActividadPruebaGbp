@@ -1,18 +1,18 @@
 import mysql from 'mysql2';
 import {Router} from 'express';
+import validate from '../controllers/historialesController.js';
 const storageGbpHistoriales = Router();
 let con = undefined;
 
-storageGbpHistoriales.use((req, res, next) => {
+/* storageGbpHistoriales.use((req, res, next) => {
 
     let myConfig = JSON.parse(process.env.MY_CONNECT);
     con = mysql.createPool(myConfig)
     next();
 })
 
-storageGbpHistoriales.get("/historiales", (req, res) => {
+storageGbpHistoriales.get("/", (req, res) => {
     con.query(
-        /*sql*/
         `SELECT historiales.*, users.created_by AS created_by, users.update_by AS update_by, inventarios.id AS id_inventario 
         FROM historiales
         INNER JOIN users ON historiales.created_by = users.id
@@ -26,14 +26,12 @@ storageGbpHistoriales.get("/historiales", (req, res) => {
             }
         }
     );
-});
+}); */
 
 
-storageGbpHistoriales.get("/historiales/:id", (req, res) => {
+/* storageGbpHistoriales.get("/:id", (req, res) => {
     const id = req.params.id;
-
     con.query(
-        /*sql*/
         `SELECT historiales.*, users.created_by AS created_by, users.update_by AS update_by, inventarios.id AS id_inventario 
         FROM historiales
         INNER JOIN users ON historiales.created_by = users.id
@@ -48,10 +46,10 @@ storageGbpHistoriales.get("/historiales/:id", (req, res) => {
             }
         }
     );
-});
+}); */
 
 
-storageGbpHistoriales.post("/historiales", (req, res) => {
+storageGbpHistoriales.post("/", (req, res) => {
     const {id,cantidad,id_bodega_origen,id_bodega_destino,id_inventario,estado,created_by,update_by,created_at,updated_at,deleted_at} = req.body;
     con.query(
         /*sql*/
@@ -67,7 +65,7 @@ storageGbpHistoriales.post("/historiales", (req, res) => {
         }
     );
 });
-storageGbpHistoriales.put("/historiales/:id", (req, res) => {
+storageGbpHistoriales.put("/:id", (req, res) => {
     const id = req.params.id;
     const {cantidad,id_bodega_origen,id_bodega_destino,id_inventario,estado,created_by,update_by,created_at,updated_at,deleted_at} = req.body;
     con.query(
@@ -84,7 +82,7 @@ storageGbpHistoriales.put("/historiales/:id", (req, res) => {
         }
     );
 });
-storageGbpHistoriales.delete("/historiales/:id", (req, res) => {
+storageGbpHistoriales.delete("/:id", (req, res) => {
     const id = req.params.id;
     con.query(
         /*sql*/
@@ -101,5 +99,6 @@ storageGbpHistoriales.delete("/historiales/:id", (req, res) => {
     );
 });
 
+storageGbpHistoriales.get("/", validate);
 
 export default storageGbpHistoriales;
