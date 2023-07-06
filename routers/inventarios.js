@@ -54,7 +54,7 @@ storageGbpInventarios.post("/inventarios", (req, res) => {
     const {id,id_bodega,id_producto,cantidad,created_by,update_by,created_at,updated_at,deleted_at} = req.body;
     con.query(
         /*sql*/
-        `INSERT INTO inventarios (id,id_bodega,id_producto,cantidad,created_by,update_by,created_at,updated_at,deleted_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        `INSERT INTO inventarios (id,id_bodega,id_producto,cantidad,created_by,update_by,created_at,updated_at,deleted_at) VALUES (:_ID, :nobodega, :producto, :cant, :createdBy, :updateBy, :createdAt, :updateAt, :deleteBy)`,
         [id,id_bodega,id_producto,cantidad,created_by,update_by,created_at,updated_at,deleted_at],
         (err, result) => {
             if (err) {
@@ -71,7 +71,7 @@ storageGbpInventarios.put("/inventarios/:id", (req, res) => {
     const {id_bodega,id_producto,cantidad,created_by,update_by,created_at,updated_at,deleted_at} = req.body;
     con.query(
         /*sql*/
-        `UPDATE inventarios SET id_bodega = ?, id_producto  = ?, cantidad = ?,created_by = ?,update_by = ?,created_at = ?,updated_at = ?,deleted_at = ? WHERE id = ?`,
+        `UPDATE inventarios SET id_bodega = :nobodega, id_producto  = :producto, cantidad = :cant,created_by = :createdBy,update_by = :updateBy,created_at = :createdAt,updated_at = :updateAt,deleted_at = :deleteBy WHERE id = :_ID`,
         [id_bodega,id_producto,cantidad,created_by,update_by,created_at,updated_at,deleted_at,id],
         (err, result) => {
             if (err) {
@@ -87,7 +87,7 @@ storageGbpInventarios.delete("/inventarios/:id", (req, res) => {
     const id = req.params.id;
     con.query(
         /*sql*/
-        `DELETE FROM inventarios WHERE id = ?`,
+        `DELETE FROM inventarios WHERE id = :_ID`,
         [id],
         (err, result) => {
             if (err) {

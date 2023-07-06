@@ -51,7 +51,7 @@ storageGbpBodegas.post("/bodegas", (req, res) => {
     const {id,nombre,id_responsable,estado,created_by,update_by,created_at,updated_at,deleted_at} = req.body;
     con.query(
         /*sql*/
-        `INSERT INTO bodegas (id, nombre, id_responsable, estado, created_by, update_by, created_at, updated_at, deleted_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        `INSERT INTO bodegas (id, nombre, id_responsable, estado, created_by, update_by, created_at, updated_at, deleted_at) VALUES (:_ID, :name, :responsable, :activo, :createdBy, :updateBy, :createdAt, :updateAt, :deletedBy)`,
         [id, nombre, id_responsable, estado, created_by, update_by, created_at, updated_at, deleted_at],
         (err, result) => {
             if (err) {
@@ -68,7 +68,7 @@ storageGbpBodegas.put("/bodegas/:id", (req, res) => {
     const {nombre,id_responsable,estado,created_by,update_by,created_at,updated_at,deleted_at} = req.body;
     con.query(
         /*sql*/
-        `UPDATE bodegas SET nombre = ?, id_responsable = ?, estado = ?, created_by = ?, update_by = ?, created_at = ?, updated_at = ?, deleted_at = ? WHERE id = ?`,
+        `UPDATE bodegas SET nombre = :name, id_responsable = :responsable, estado = :activo, created_by = :createdBy, update_by = :updateBy, created_at = :createdAt, updated_at = :updateAt, deleted_at = :deletedBy WHERE id = :_ID`,
         [nombre, id_responsable, estado, created_by, update_by, created_at, updated_at, deleted_at, id],
         (err, result) => {
             if (err) {
@@ -84,7 +84,7 @@ storageGbpBodegas.delete("/bodegas/:id", (req, res) => {
     const id = req.params.id;
     con.query(
         /*sql*/
-        `DELETE FROM bodegas WHERE id = ?`,
+        `DELETE FROM bodegas WHERE id = :_ID`,
         [id],
         (err, result) => {
             if (err) {

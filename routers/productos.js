@@ -52,7 +52,7 @@ storageGbpProductos.post("/productos", (req, res) => {
     const {id,nombre,descripcion,estado,created_by,update_by,created_at,updated_at,deleted_at} = req.body;
     con.query(
         /*sql*/
-        `INSERT INTO productos (id,nombre,descripcion,estado,created_by,update_by,created_at,updated_at,deleted_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        `INSERT INTO productos (id,nombre,descripcion,estado,created_by,update_by,created_at,updated_at,deleted_at) VALUES (:_ID, :name, :description, :activity, :createdBy, :updatedBy, :createdAt, :updateAt, :deleteBy)`,
         [id,nombre,descripcion,estado,created_by,update_by,created_at,updated_at,deleted_at],
         (err, result) => {
             if (err) {
@@ -69,7 +69,7 @@ storageGbpProductos.put("/productos/:id", (req, res) => {
     const {nombre,descripcion,estado,created_by,update_by,created_at,updated_at,deleted_at} = req.body;
     con.query(
         /*sql*/
-        `UPDATE productos SET nombre = ?, descripcion  = ?, estado = ?,created_by = ?,update_by = ?,created_at = ?,updated_at = ?,deleted_at = ? WHERE id = ?`,
+        `UPDATE productos SET nombre = :name, descripcion  = :description, estado = :activity,created_by = :createdBy,update_by = :updatedBy,created_at = :createdAt,updated_at = :updateAt,deleted_at = :deleteBy WHERE id = :_ID`,
         [nombre,descripcion,estado,created_by,update_by,created_at,updated_at,deleted_at,id],
         (err, result) => {
             if (err) {
@@ -85,7 +85,7 @@ storageGbpProductos.delete("/productos/:id", (req, res) => {
     const id = req.params.id;
     con.query(
         /*sql*/
-        `DELETE FROM productos WHERE id = ?`,
+        `DELETE FROM productos WHERE id = :_ID`,
         [id],
         (err, result) => {
             if (err) {
