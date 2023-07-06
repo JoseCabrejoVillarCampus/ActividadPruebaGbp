@@ -13,18 +13,29 @@ storageGbpProductos.use((req, res, next) => {
 storageGbpProductos.get("/productos", (req, res) => {
     con.query(
         /*sql*/
-        `SELECT * FROM productos`,
+        `SELECT productos.*, users.created_by AS created_by, users.update_by AS update_by 
+        FROM productos
+        INNER JOIN users ON productos.created_by = users.id `,
         (err, data, fil) => {
-            res.send(JSON.stringify(data));
+            if (err) {
+                console.error('Error al obtener los productos:', err.message);
+                res.sendStatus(500);
+            } else {
+                res.send(JSON.stringify(data));
+            }
         }
     );
-})
+});
+
 storageGbpProductos.get("/productos/:id", (req, res) => {
     const id = req.params.id;
 
     con.query(
         /*sql*/
-        `SELECT * FROM productos WHERE id = ?`, [id],
+        `SELECT productos.*, users.created_by AS created_by, users.update_by AS update_by 
+        FROM productos
+        INNER JOIN users ON productos.created_by = users.id 
+        WHERE productos.id = ?`, [id],
         (err, data, fil) => {
             if (err) {
                 console.error('Error al obtener el producto:', err.message);
@@ -35,6 +46,7 @@ storageGbpProductos.get("/productos/:id", (req, res) => {
         }
     );
 });
+
 
 storageGbpProductos.post("/productos", (req, res) => {
     const {id,nombre,descripcion,estado,created_by,update_by,created_at,updated_at,deleted_at} = req.body;

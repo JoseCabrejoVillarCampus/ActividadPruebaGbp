@@ -13,18 +13,29 @@ storageGbpBodegas.use((req, res, next) => {
 storageGbpBodegas.get("/bodegas", (req, res) => {
     con.query(
         /*sql*/
-        `SELECT * FROM bodegas`,
+        `SELECT bodegas.*, users.nombre AS responsable_nombre
+        FROM bodegas
+        INNER JOIN users ON bodegas.id_responsable = users.id`,
         (err, data, fil) => {
-            res.send(JSON.stringify(data));
+            if (err) {
+                console.error('Error al obtener las bodegas:', err.message);
+                res.sendStatus(500);
+            } else {
+                res.send(JSON.stringify(data));
+            }
         }
     );
-})
+});
+
 storageGbpBodegas.get("/bodegas/:id", (req, res) => {
     const id = req.params.id;
 
     con.query(
         /*sql*/
-        `SELECT * FROM bodegas WHERE id = ?`, [id],
+        `SELECT bodegas.*, users.nombre AS responsable_nombre
+        FROM bodegas
+        INNER JOIN users ON bodegas.id_responsable = users.id
+        WHERE bodegas.id = ?`, [id],
         (err, data, fil) => {
             if (err) {
                 console.error('Error al obtener la bodega:', err.message);

@@ -13,18 +13,32 @@ storageGbpHistoriales.use((req, res, next) => {
 storageGbpHistoriales.get("/historiales", (req, res) => {
     con.query(
         /*sql*/
-        `SELECT * FROM historiales`,
+        `SELECT historiales.*, users.created_by AS created_by, users.update_by AS update_by, inventarios.id AS id_inventario 
+        FROM historiales
+        INNER JOIN users ON historiales.created_by = users.id
+        INNER JOIN inventarios ON historiales.id_inventario = inventarios.id`,
         (err, data, fil) => {
-            res.send(JSON.stringify(data));
+            if (err) {
+                console.error('Error al obtener los historiales:', err.message);
+                res.sendStatus(500);
+            } else {
+                res.send(JSON.stringify(data));
+            }
         }
     );
-})
+});
+
+
 storageGbpHistoriales.get("/historiales/:id", (req, res) => {
     const id = req.params.id;
 
     con.query(
         /*sql*/
-        `SELECT * FROM historiales WHERE id = ?`, [id],
+        `SELECT historiales.*, users.created_by AS created_by, users.update_by AS update_by, inventarios.id AS id_inventario 
+        FROM historiales
+        INNER JOIN users ON historiales.created_by = users.id
+        INNER JOIN inventarios ON historiales.id_inventario = inventarios.id 
+        WHERE historiales.id = ?`, [id],
         (err, data, fil) => {
             if (err) {
                 console.error('Error al obtener el historial:', err.message);
@@ -35,6 +49,7 @@ storageGbpHistoriales.get("/historiales/:id", (req, res) => {
         }
     );
 });
+
 
 storageGbpHistoriales.post("/historiales", (req, res) => {
     const {id,cantidad,id_bodega_origen,id_bodega_destino,id_inventario,estado,created_by,update_by,created_at,updated_at,deleted_at} = req.body;

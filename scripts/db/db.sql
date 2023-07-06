@@ -38,7 +38,7 @@ CREATE TABLE inventarios(
     update_at TIMESTAMP,
     deleted_at TIMESTAMP
 );
-CREATE TABLE bodegas(
+CREATE TABLE historiales(
     id BIGINT(20) UNSIGNED,
     cantidad INT(11),
     id_bodega_origen BIGINT(20) UNSIGNED,
@@ -51,7 +51,7 @@ CREATE TABLE bodegas(
     update_at TIMESTAMP,
     deleted_at TIMESTAMP
 );
-CREATE TABLE historiales(
+CREATE TABLE bodegas(
     id BIGINT(20) UNSIGNED,
     nombre VARCHAR(225),
     id_responsable BIGINT(20) UNSIGNED,

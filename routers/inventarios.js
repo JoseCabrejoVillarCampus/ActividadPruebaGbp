@@ -13,18 +13,31 @@ storageGbpInventarios.use((req, res, next) => {
 storageGbpInventarios.get("/inventarios", (req, res) => {
     con.query(
         /*sql*/
-        `SELECT * FROM inventarios`,
+        `SELECT inventarios.*, bodegas.nombre AS nombre_bodega, productos.nombre AS nombre_producto 
+        FROM inventarios
+        INNER JOIN bodegas ON inventarios.id_bodega = bodegas.id
+        INNER JOIN productos ON inventarios.id_producto = productos.id`,
         (err, data, fil) => {
-            res.send(JSON.stringify(data));
+            if (err) {
+                console.error('Error al obtener los inventarios:', err.message);
+                res.sendStatus(500);
+            } else {
+                res.send(JSON.stringify(data));
+            }
         }
     );
-})
+});
+
 storageGbpInventarios.get("/inventarios/:id", (req, res) => {
     const id = req.params.id;
 
     con.query(
         /*sql*/
-        `SELECT * FROM inventarios WHERE id = ?`, [id],
+        `SELECT inventarios.*, bodegas.nombre AS nombre_bodega, productos.nombre AS nombre_producto 
+        FROM inventarios
+        INNER JOIN bodegas ON inventarios.id_bodega = bodegas.id
+        INNER JOIN productos ON inventarios.id_producto = productos.id
+        WHERE inventarios.id = ?`, [id],
         (err, data, fil) => {
             if (err) {
                 console.error('Error al obtener el inventario:', err.message);
@@ -35,6 +48,7 @@ storageGbpInventarios.get("/inventarios/:id", (req, res) => {
         }
     );
 });
+
 
 storageGbpInventarios.post("/inventarios", (req, res) => {
     const {id,id_bodega,id_producto,cantidad,created_by,update_by,created_at,updated_at,deleted_at} = req.body;
