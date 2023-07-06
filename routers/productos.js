@@ -46,6 +46,24 @@ storageGbpProductos.get("/productos/:id", (req, res) => {
         }
     );
 });
+storageGbpProductos.get("/productos/total", (req, res) => {
+    con.query(
+        /*sql*/
+        `SELECT productos.*, SUM(inventarios.cantidad) AS Total
+        FROM productos
+        INNER JOIN inventarios ON productos.id = inventarios.id_producto
+        GROUP BY productos.id
+        ORDER BY Total DESC`,
+        (err, data, fil) => {
+            if (err) {
+                console.error('Error al obtener los productos:', err.message);
+                res.sendStatus(500);
+            } else {
+                res.send(JSON.stringify(data));
+            }
+        }
+    );
+});
 
 
 storageGbpProductos.post("/productos", (req, res) => {
