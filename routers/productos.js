@@ -26,9 +26,9 @@ storageGbpProductos.post("/", (req, res) => {
         }
     );
 });
-storageGbpProductos.post("/productos", (req, res) => {
+/* storageGbpProductos.post("/productos", (req, res) => {
     const { id, nombre, descripcion, estado, created_by, update_by, created_at, updated_at, deleted_at } = req.body;
-    const bodegaDefaultId = 1; // ID de la bodega por defecto
+    const bodegaDefaultId = 16; // ID de la bodega por defecto
     
     con.getConnection((err, connection) => {
         if (err) {
@@ -187,7 +187,7 @@ storageGbpProductos.post("/trasladar/:productoId", (req, res) => {
         });
       }
     });
-  });
+  }); */
 storageGbpProductos.put("/:id", (req, res) => {
     const id = req.params.id;
     const {nombre,descripcion,estado,created_by,update_by,created_at,updated_at,deleted_at} = req.body;
@@ -209,7 +209,7 @@ storageGbpProductos.delete("/:id", (req, res) => {
     const id = req.params.id;
     con.query(
         /*sql*/
-        `DELETE FROM productos WHERE id = :?`,
+        `DELETE FROM productos WHERE id = ?`,
         [id],
         (err, result) => {
             if (err) {
