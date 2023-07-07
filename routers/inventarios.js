@@ -69,7 +69,7 @@ storageGbpInventarios.put("/:id", (req, res) => {
     const {id_bodega,id_producto,cantidad,created_by,update_by,created_at,updated_at,deleted_at} = req.body;
     con.query(
         /*sql*/
-        `UPDATE inventarios SET id_bodega = ?, id_producto  = ?, cantidad = ?,created_by = ?,update_by = ?,created_at = ?,updated_at = ?,deleted_at = ? WHERE id =?`,
+        `UPDATE inventarios SET id_bodega = ?, id_producto  = ?, cantidad = ?,created_by = ?,update_by = ?,created_at = ?,updated_at = ?,deleted_at = ? WHERE id = ?`,
         [id_bodega,id_producto,cantidad,created_by,update_by,created_at,updated_at,deleted_at,id],
         (err, result) => {
             if (err) {
