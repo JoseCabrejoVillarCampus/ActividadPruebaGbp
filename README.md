@@ -106,3 +106,23 @@ id (integer): El ID del producto a eliminar.
 |---|---|
 |FILA 1| FILA 1|
 |FILA 2 | FILA 2|
+
+
+```javascript
+storageGbpProductos.post("/", (req, res) => {
+    const {id,nombre,descripcion,estado,created_by,update_by,created_at,updated_at,deleted_at} = req.body;
+    con.query(
+        /*sql*/
+        `INSERT INTO productos (id,nombre,descripcion,estado,created_by,update_by,created_at,updated_at,deleted_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        [id,nombre,descripcion,estado,created_by,update_by,created_at,updated_at,deleted_at],
+        (err, result) => {
+            if (err) {
+                console.error('Error al crear el producto:', err.message);
+                res.sendStatus(500);
+            } else {
+                res.sendStatus(201);
+            }
+        }
+    );
+});
+```
