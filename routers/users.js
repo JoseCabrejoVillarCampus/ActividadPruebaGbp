@@ -39,7 +39,7 @@ storageGbpUsers.post("/", (req, res) => {
     const {id,nombre,email,email_verified_at,estado,created_by,update_by,foto,password,created_at,updated_at,deleted_at} = req.body;
     con.query(
         /*sql*/
-        `INSERT INTO users (id,nombre,email,email_verified_at,estado,created_by,update_by,foto,password,created_at,updated_at,deleted_at) VALUES (:_ID, :name, :Email, :verification, :activo, :createdBy, :updateBy, :photo, :pass_word, :createdAt, :updateAt, :deletedAt)`,
+        `INSERT INTO users (id,nombre,email,email_verified_at,estado,created_by,update_by,foto,password,created_at,updated_at,deleted_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         [id,nombre,email,email_verified_at,estado,created_by,update_by,foto,password,created_at,updated_at,deleted_at],
         (err, result) => {
             if (err) {
@@ -56,7 +56,7 @@ storageGbpUsers.put("/:id", (req, res) => {
     const {nombre,email,email_verified_at,estado,created_by,update_by,foto,password,created_at,updated_at,deleted_at} = req.body;
     con.query(
         /*sql*/
-        `UPDATE users SET nombre = :name, email  = :Email,email_verified_at = :verification,estado = :activo,created_by = :createdBy,update_by = :updateBy,foto = :photo,password = :pass_word,created_at = :createdAt,updated_at = :updateAt,deleted_at = :deletedAt WHERE id = :_ID`,
+        `UPDATE users SET nombre = ?, email  = ?,email_verified_at = ?,estado = ?,created_by = ?,update_by = ?,foto = ?,password = ?,created_at = ?,updated_at = ?,deleted_at = ? WHERE id = ?`,
         [nombre,email,email_verified_at,estado,created_by,update_by,foto,password,created_at,updated_at,deleted_at,id],
         (err, result) => {
             if (err) {
@@ -72,7 +72,7 @@ storageGbpUsers.delete("/:id", (req, res) => {
     const id = req.params.id;
     con.query(
         /*sql*/
-        `DELETE FROM users WHERE id = _ID`,
+        `DELETE FROM users WHERE id = ?`,
         [id],
         (err, result) => {
             if (err) {

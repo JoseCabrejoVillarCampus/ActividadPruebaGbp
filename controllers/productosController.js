@@ -2,8 +2,9 @@ import mysql from 'mysql2';
 const validate = (req, res)=>{
     const myConfig = JSON.parse(process.env.MY_CONNECT);
     const con = mysql.createPool(myConfig)
+    
 
-    if(!req.query.hasOwnProperty("id")){
+    if(!req.query.hasOwnProperty("id") && !req.query.hasOwnProperty("desc")){
         con.query(
             `SELECT productos.*, users.created_by AS created_by, users.update_by AS update_by 
             FROM productos

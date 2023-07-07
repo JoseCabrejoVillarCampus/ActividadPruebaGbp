@@ -19,7 +19,7 @@ const validate = (req, res)=>{
             }
         );
     }else if(req.query.id){
-        const id = req.params.id;
+        const id = req.query.id;
         con.query(
             `SELECT inventarios.*, bodegas.nombre AS nombre_bodega, productos.nombre AS nombre_producto 
             FROM inventarios

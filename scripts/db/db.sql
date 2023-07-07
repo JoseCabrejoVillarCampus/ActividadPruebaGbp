@@ -280,3 +280,11 @@ SELECT productos.*, SUM(inventarios.cantidad) AS Total
             INNER JOIN inventarios ON productos.id = inventarios.id_producto
             GROUP BY productos.id
             ORDER BY Total DESC;
+
+SELECT bodegas.*, users.nombre AS responsable_nombre
+            FROM bodegas
+            INNER JOIN users ON bodegas.id_responsable = users.id
+            WHERE bodegas.id = 200
+            
+
+            

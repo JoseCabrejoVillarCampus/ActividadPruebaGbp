@@ -19,7 +19,7 @@ const validate = (req, res)=>{
             }
         );
     }else if(req.query.id){
-        const id = req.params.id;
+        const id = req.query.id;
         con.query(
             `SELECT historiales.*, users.created_by AS created_by, users.update_by AS update_by, inventarios.id AS id_inventario 
             FROM historiales

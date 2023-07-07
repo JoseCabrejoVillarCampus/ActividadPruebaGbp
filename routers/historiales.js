@@ -53,7 +53,7 @@ storageGbpHistoriales.post("/", (req, res) => {
     const {id,cantidad,id_bodega_origen,id_bodega_destino,id_inventario,estado,created_by,update_by,created_at,updated_at,deleted_at} = req.body;
     con.query(
         /*sql*/
-        `INSERT INTO historiales (id,cantidad,id_bodega_origen,id_bodega_destino,id_inventario,estado,created_by,update_by,created_at,updated_at,deleted_at) VALUES (:_ID, :cant, :bodega, :destino, :inventariID, :activo, :createdBy, :updateBy, :createdAt, :updatedAt, :deleteBy)`,
+        `INSERT INTO historiales (id,cantidad,id_bodega_origen,id_bodega_destino,id_inventario,estado,created_by,update_by,created_at,updated_at,deleted_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         [id,cantidad,id_bodega_origen,id_bodega_destino,id_inventario,estado,created_by,update_by,created_at,updated_at,deleted_at],
         (err, result) => {
             if (err) {
@@ -70,7 +70,7 @@ storageGbpHistoriales.put("/:id", (req, res) => {
     const {cantidad,id_bodega_origen,id_bodega_destino,id_inventario,estado,created_by,update_by,created_at,updated_at,deleted_at} = req.body;
     con.query(
         /*sql*/
-        `UPDATE historiales SET cantidad = :cant,id_bodega_origen = :bodega,id_bodega_destino = :destino,id_inventario = :inventariID,estado = :activo,created_by = :createdBy,update_by = :updateBy,created_at = :createdAt,updated_at = :updatedAt,deleted_at = :deleteBy WHERE id = :_ID`,
+        `UPDATE historiales SET cantidad = ?,id_bodega_origen = ?,id_bodega_destino = ?,id_inventario = ?,estado = ?,created_by = ?,update_by = ?,created_at = ?,updated_at = ?,deleted_at = ? WHERE id = ?`,
         [cantidad,id_bodega_origen,id_bodega_destino,id_inventario,estado,created_by,update_by,created_at,updated_at,deleted_at,id],
         (err, result) => {
             if (err) {
@@ -86,7 +86,7 @@ storageGbpHistoriales.delete("/:id", (req, res) => {
     const id = req.params.id;
     con.query(
         /*sql*/
-        `DELETE FROM historiales WHERE id = :_ID`,
+        `DELETE FROM historiales WHERE id = ?`,
         [id],
         (err, result) => {
             if (err) {

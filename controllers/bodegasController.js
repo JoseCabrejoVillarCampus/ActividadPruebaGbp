@@ -3,7 +3,7 @@ const validate = (req, res)=>{
     const myConfig = JSON.parse(process.env.MY_CONNECT);
     const con = mysql.createPool(myConfig)
 
-    if(!req.query.hasOwnProperty("id") && !req.query.hasOwnProperty("desc")){
+    if(!req.query.hasOwnProperty("id")){
         con.query(
             `SELECT bodegas.*, users.nombre AS responsable_nombre
             FROM bodegas
@@ -17,8 +17,8 @@ const validate = (req, res)=>{
                 }
             }
         );
-    }else if(!req.query.id){
-        const id = req.params.id;
+    }else if(req.query.id){
+        const id = req.query.id;
         con.query(
             `SELECT bodegas.*, users.nombre AS responsable_nombre
             FROM bodegas
@@ -32,7 +32,7 @@ const validate = (req, res)=>{
                     res.send(JSON.stringify(data));
                 }
             }
-        );
+    );
     }
 }
 export default validate

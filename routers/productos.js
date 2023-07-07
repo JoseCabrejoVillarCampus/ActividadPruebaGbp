@@ -14,7 +14,7 @@ storageGbpProductos.post("/", (req, res) => {
     const {id,nombre,descripcion,estado,created_by,update_by,created_at,updated_at,deleted_at} = req.body;
     con.query(
         /*sql*/
-        `INSERT INTO productos (id,nombre,descripcion,estado,created_by,update_by,created_at,updated_at,deleted_at) VALUES (:_ID, :name, :description, :activity, :createdBy, :updatedBy, :createdAt, :updateAt, :deleteBy)`,
+        `INSERT INTO productos (id,nombre,descripcion,estado,created_by,update_by,created_at,updated_at,deleted_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         [id,nombre,descripcion,estado,created_by,update_by,created_at,updated_at,deleted_at],
         (err, result) => {
             if (err) {
@@ -26,12 +26,75 @@ storageGbpProductos.post("/", (req, res) => {
         }
     );
 });
+storageGbpProductos.post("/productos", (req, res) => {
+    const { id, nombre, descripcion, estado, created_by, update_by, created_at, updated_at, deleted_at } = req.body;
+    const bodegaDefaultId = 1; // ID de la bodega por defecto
+    
+    con.getConnection((err, connection) => {
+        if (err) {
+            console.error('Error al obtener la conexión:', err.message);
+            res.sendStatus(500);
+        } else {
+            connection.beginTransaction((err) => {
+                if (err) {
+                    console.error('Error al iniciar la transacción:', err.message);
+                    res.sendStatus(500);
+                    return;
+                }
+                
+                // Insertar el producto en la tabla de productos
+                connection.query(
+                    `INSERT INTO productos (id, nombre, descripcion, estado, created_by, update_by, created_at, updated_at, deleted_at) 
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+                    [id, nombre, descripcion, estado, created_by, update_by, created_at, updated_at, deleted_at],
+                    (err, result) => {
+                        if (err) {
+                            console.error('Error al crear el producto:', err.message);
+                            connection.rollback(() => {
+                                res.sendStatus(500);
+                            });
+                        } else {
+                            // Obtener el último ID insertado en la tabla de productos
+                            const productoId = result.insertId;
+                            
+                            // Insertar la cantidad inicial del producto en el inventario de la bodega por defecto
+                            connection.query(
+                                `INSERT INTO inventarios (id_producto, id_bodega, cantidad) 
+                                VALUES (?, ?, ?)`,
+                                [productoId, bodegaDefaultId, 0], // Establecer la cantidad inicial en 0
+                                (err, result) => {
+                                    if (err) {
+                                        console.error('Error al asignar la cantidad inicial del producto en el inventario:', err.message);
+                                        connection.rollback(() => {
+                                            res.sendStatus(500);
+                                        });
+                                    } else {
+                                        connection.commit((err) => {
+                                            if (err) {
+                                                console.error('Error al confirmar la transacción:', err.message);
+                                                connection.rollback(() => {
+                                                    res.sendStatus(500);
+                                                });
+                                            } else {
+                                                res.sendStatus(201);
+                                            }
+                                        });
+                                    }
+                                }
+                            );
+                        }
+                    }
+                );
+            });
+        }
+    });
+});
 storageGbpProductos.put("/:id", (req, res) => {
     const id = req.params.id;
     const {nombre,descripcion,estado,created_by,update_by,created_at,updated_at,deleted_at} = req.body;
     con.query(
         /*sql*/
-        `UPDATE productos SET nombre = :name, descripcion  = :description, estado = :activity,created_by = :createdBy,update_by = :updatedBy,created_at = :createdAt,updated_at = :updateAt,deleted_at = :deleteBy WHERE id = :_ID`,
+        `UPDATE productos SET nombre = ?, descripcion  = ?, estado = ?,created_by = ?,update_by = ?,created_at = ?,updated_at = ?,deleted_at = ? WHERE id = ?`,
         [nombre,descripcion,estado,created_by,update_by,created_at,updated_at,deleted_at,id],
         (err, result) => {
             if (err) {
@@ -47,7 +110,7 @@ storageGbpProductos.delete("/:id", (req, res) => {
     const id = req.params.id;
     con.query(
         /*sql*/
-        `DELETE FROM productos WHERE id = :_ID`,
+        `DELETE FROM productos WHERE id = :?`,
         [id],
         (err, result) => {
             if (err) {

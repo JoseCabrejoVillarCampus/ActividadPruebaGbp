@@ -11,9 +11,9 @@ const validate = (req, res)=>{
             }
         );
     }else if(req.query.id){
-        const id = req.params.id;
+        const id = req.query.id;
         con.query(
-            `SELECT * FROM users WHERE id = ?`, [id],
+            `SELECT users.*, WHERE users.id = ?`, [id],
             (err, data, fil) => {
                 if (err) {
                     console.error('Error al obtener el usuario:', err.message);
