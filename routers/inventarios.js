@@ -1,6 +1,6 @@
 import mysql from 'mysql2';
 import {Router} from 'express';
-import validate from '../controllers/inventariosController.js';
+import proxyInventarios from '../middleware/middlewareInventarios.js';
 const storageGbpInventarios = Router();
 let con = undefined;
 
@@ -11,49 +11,21 @@ storageGbpInventarios.use((req, res, next) => {
     next();
 })
 
-/* storageGbpInventarios.get("/", (req, res) => {
-    con.query(
-        `SELECT inventarios.*, bodegas.nombre AS nombre_bodega, productos.nombre AS nombre_producto 
-        FROM inventarios
-        INNER JOIN bodegas ON inventarios.id_bodega = bodegas.id
-        INNER JOIN productos ON inventarios.id_producto = productos.id`,
-        (err, data, fil) => {
-            if (err) {
-                console.error('Error al obtener los inventarios:', err.message);
-                res.sendStatus(500);
-            } else {
-                res.send(JSON.stringify(data));
-            }
+storageGbpInventarios.get("/:id?", proxyInventarios , (req,res)=>{
+    let sql = (req.params.id)
+        ? [`SELECT * FROM inventarios WHERE ?`, req.params]
+        : [`SELECT * FROM inventarios`];
+    con.query(...sql,
+        (err, data, fie)=>{
+            res.send(data);
         }
     );
-});
-
-storageGbpInventarios.get("/:id", (req, res) => {
-    const id = req.params.id;
-    con.query(
-        `SELECT inventarios.*, bodegas.nombre AS nombre_bodega, productos.nombre AS nombre_producto 
-        FROM inventarios
-        INNER JOIN bodegas ON inventarios.id_bodega = bodegas.id
-        INNER JOIN productos ON inventarios.id_producto = productos.id
-        WHERE inventarios.id = ?`, [id],
-        (err, data, fil) => {
-            if (err) {
-                console.error('Error al obtener el inventario:', err.message);
-                res.sendStatus(500);
-            } else {
-                res.send(JSON.stringify(data));
-            }
-        }
-    );
-}); */
-
-
-storageGbpInventarios.post("/", (req, res) => {
-    const {id,id_bodega,id_producto,cantidad,created_by,update_by,created_at,updated_at,deleted_at} = req.body;
+})
+storageGbpInventarios.post("/", proxyInventarios ,(req, res) => {
     con.query(
         /*sql*/
-        `INSERT INTO inventarios (id,id_bodega,id_producto,cantidad,created_by,update_by,created_at,updated_at,deleted_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-        [id,id_bodega,id_producto,cantidad,created_by,update_by,created_at,updated_at,deleted_at],
+        `INSERT INTO inventarios SET ?`,
+        req.body,
         (err, result) => {
             if (err) {
                 console.error('Error al crear el inventario:', err.message);
@@ -65,12 +37,10 @@ storageGbpInventarios.post("/", (req, res) => {
     );
 });
 storageGbpInventarios.put("/:id", (req, res) => {
-    const id = req.params.id;
-    const {id_bodega,id_producto,cantidad,created_by,update_by,created_at,updated_at,deleted_at} = req.body;
     con.query(
         /*sql*/
-        `UPDATE inventarios SET id_bodega = ?, id_producto  = ?, cantidad = ?,created_by = ?,update_by = ?,created_at = ?,updated_at = ?,deleted_at = ? WHERE id = ?`,
-        [id_bodega,id_producto,cantidad,created_by,update_by,created_at,updated_at,deleted_at,id],
+        `UPDATE inventarios SET ? WHERE id = ?`,
+        [req.body, req.params.id],
         (err, result) => {
             if (err) {
                 console.error('Error al actualizar el inventario:', err.message);
@@ -82,11 +52,10 @@ storageGbpInventarios.put("/:id", (req, res) => {
     );
 });
 storageGbpInventarios.delete("/:id", (req, res) => {
-    const id = req.params.id;
     con.query(
         /*sql*/
-        `DELETE FROM inventarios WHERE id = ?`,
-        [id],
+        `DELETE FROM inventarios WHERE  ?`,
+        req.params,
         (err, result) => {
             if (err) {
                 console.error('Error al eliminar el inventario:', err.message);
@@ -98,6 +67,5 @@ storageGbpInventarios.delete("/:id", (req, res) => {
     );
 });
 
-storageGbpInventarios.get("/", validate);
 
 export default storageGbpInventarios;

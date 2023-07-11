@@ -126,3 +126,7 @@ storageGbpProductos.post("/", (req, res) => {
     );
 });
 ```
+
+![img](https://media.discordapp.net/attachments/1113793970867277896/1126849094804062308/Screenshot_20230707-071521.jpg?width=283&height=644)
+
+[app.js](app.js)

@@ -1,46 +1,32 @@
 import mysql from 'mysql2';
 import {Router} from 'express';
-import validate from '../controllers/usersController.js';
+import proxyUsers from '../middleware/middlewareUsers.js';
 const storageGbpUsers = Router();
 let con = undefined;
 
 storageGbpUsers.use((req, res, next) => {
-
     let myConfig = JSON.parse(process.env.MY_CONNECT);
     con = mysql.createPool(myConfig)
     next();
 })
 
-storageGbpUsers.get("/", (req, res) => {
-    con.query(
-        `SELECT * FROM users`,
-        (err, data, fil) => {
-            res.send(JSON.stringify(data));
+storageGbpUsers.get("/:id?", proxyUsers , (req,res)=>{
+    let sql = (req.params.id)
+        ? [`SELECT * FROM users WHERE ?`, req.params]
+        : [`SELECT * FROM users`];
+    con.query(...sql,
+        (err, data, fie)=>{
+            res.send(data);
         }
     );
 })
-storageGbpUsers.get("/:id", (req, res) => {
-    const id = req.params.id;
 
-    con.query(
-        `SELECT * FROM users WHERE id = ?`, [id],
-        (err, data, fil) => {
-            if (err) {
-                console.error('Error al obtener el usuario:', err.message);
-                res.sendStatus(500);
-            } else {
-                res.send(JSON.stringify(data));
-            }
-        }
-    );
-});
 
-storageGbpUsers.post("/", (req, res) => {
-    const {id,nombre,email,email_verified_at,estado,created_by,update_by,foto,password,created_at,updated_at,deleted_at} = req.body;
+storageGbpUsers.post("/", proxyUsers ,(req, res) => {
     con.query(
         /*sql*/
-        `INSERT INTO users (id,nombre,email,email_verified_at,estado,created_by,update_by,foto,password,created_at,updated_at,deleted_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-        [id,nombre,email,email_verified_at,estado,created_by,update_by,foto,password,created_at,updated_at,deleted_at],
+        `INSERT INTO users SET ?`,
+        req.body,
         (err, result) => {
             if (err) {
                 console.error('Error al crear el usuario:', err.message);
@@ -51,13 +37,11 @@ storageGbpUsers.post("/", (req, res) => {
         }
     );
 });
-storageGbpUsers.put("/:id", (req, res) => {
-    const id = req.params.id;
-    const {nombre,email,email_verified_at,estado,created_by,update_by,foto,password,created_at,updated_at,deleted_at} = req.body;
+storageGbpUsers.put("/:id", proxyUsers ,(req, res) => {
     con.query(
         /*sql*/
-        `UPDATE users SET nombre = ?, email  = ?,email_verified_at = ?,estado = ?,created_by = ?,update_by = ?,foto = ?,password = ?,created_at = ?,updated_at = ?,deleted_at = ? WHERE id = ?`,
-        [nombre,email,email_verified_at,estado,created_by,update_by,foto,password,created_at,updated_at,deleted_at,id],
+        `UPDATE users SET  ? WHERE id = ?`,
+        [req.body, req.params.id],
         (err, result) => {
             if (err) {
                 console.error('Error al actualizar el usuario:', err.message);
@@ -68,12 +52,11 @@ storageGbpUsers.put("/:id", (req, res) => {
         }
     );
 });
-storageGbpUsers.delete("/:id", (req, res) => {
-    const id = req.params.id;
+storageGbpUsers.delete("/:id", proxyUsers ,(req, res) => {
     con.query(
         /*sql*/
-        `DELETE FROM users WHERE id = ?`,
-        [id],
+        `DELETE FROM users WHERE ?`,
+        req.params,
         (err, result) => {
             if (err) {
                 console.error('Error al eliminar el usuario:', err.message);
@@ -85,6 +68,5 @@ storageGbpUsers.delete("/:id", (req, res) => {
     );
 });
 
-storageGbpUsers.get("/", validate);
 
 export default storageGbpUsers;

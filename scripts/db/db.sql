@@ -274,7 +274,7 @@ INSERT INTO `users` (`id`, `nombre`, `email`, `email_verified_at`, `estado`, `cr
 (19, 'juan8', 'juan 8@hotmail.com', NULL, 1, NULL, NULL, NULL, '12345', NULL, NULL, NULL),
 (20, 'juan9', 'juan 9@hotmail.com', NULL, 1, NULL, NULL, NULL, '12345', NULL, NULL, NULL);
 
-SELECT * FROM inventarios ;
+SELECT * FROM productos ;
 SELECT productos.*, SUM(inventarios.cantidad) AS Total
             FROM productos
             INNER JOIN inventarios ON productos.id = inventarios.id_producto
@@ -289,7 +289,13 @@ SELECT bodegas.*, users.nombre AS responsable_nombre
 SELECT productos.*, users.created_by AS created_by, users.update_by AS update_by 
             FROM productos
             INNER JOIN users ON productos.created_by = users.id 
-            WHERE productos.id = 160
+            WHERE productos.id = 160;
+
+SELECT productos.*, SUM(inventarios.cantidad) AS Total
+            FROM productos
+            INNER JOIN inventarios ON productos.id = inventarios.id_producto
+            GROUP BY productos.id
+            ORDER BY Total DESC
             
 
             

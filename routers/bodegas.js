@@ -1,6 +1,6 @@
 import mysql from 'mysql2';
 import {Router} from 'express';
-import validate from '../controllers/bodegasController.js';
+import proxyBodegas from '../middleware/middlewareBodegas.js'
 const storageGbpBodegas = Router();
 let con = undefined;
 
@@ -11,48 +11,22 @@ storageGbpBodegas.use((req, res, next) => {
     next();
 })
 
-/* storageGbpBodegas.get("/", (req, res) => {
-    con.query(
-
-        `SELECT bodegas.*, users.nombre AS responsable_nombre
-        FROM bodegas
-        INNER JOIN users ON bodegas.id_responsable = users.id`,
-        (err, data, fil) => {
-            if (err) {
-                console.error('Error al obtener las bodegas:', err.message);
-                res.sendStatus(500);
-            } else {
-                res.send(JSON.stringify(data));
-            }
+storageGbpBodegas.get("/:id?", proxyBodegas , (req,res)=>{
+    let sql = (req.params.id)
+        ? [`SELECT * FROM bodegas WHERE ?`, req.params]
+        : [`SELECT * FROM bodegas`];
+    con.query(...sql,
+        (err, data, fie)=>{
+            res.send(data);
         }
     );
-});
+})
 
-storageGbpBodegas.get("/:id", (req, res) => {
-    const id = req.params.id;
-
-    con.query(
-        `SELECT bodegas.*, users.nombre AS responsable_nombre
-        FROM bodegas
-        INNER JOIN users ON bodegas.id_responsable = users.id
-        WHERE bodegas.id = ?`, [id],
-        (err, data, fil) => {
-            if (err) {
-                console.error('Error al obtener la bodega:', err.message);
-                res.sendStatus(500);
-            } else {
-                res.send(JSON.stringify(data));
-            }
-        }
-    );
-}); */
-
-storageGbpBodegas.post("/", (req, res) => {
-    const {id,nombre,id_responsable,estado,created_by,update_by,created_at,updated_at,deleted_at} = req.body;
+storageGbpBodegas.post("/", proxyBodegas ,(req, res) => {
     con.query(
         /*sql*/
-        `INSERT INTO bodegas (id, nombre, id_responsable, estado, created_by, update_by, created_at, updated_at, deleted_at) VALUES (?,?,?,?,?,?,?,?,?)`,
-        [id, nombre, id_responsable, estado, created_by, update_by, created_at, updated_at, deleted_at],
+        `INSERT INTO bodegas SET ?`,
+        req.body,
         (err, result) => {
             if (err) {
                 console.error('Error al crear la bodega:', err.message);
@@ -65,13 +39,11 @@ storageGbpBodegas.post("/", (req, res) => {
 });
 
 
-storageGbpBodegas.put("/:id", (req, res) => {
-    const id = req.params.id;
-    const {nombre,id_responsable,estado,created_by,update_by,created_at,updated_at,deleted_at} = req.body;
+storageGbpBodegas.put("/:id", proxyBodegas ,(req, res) => {
     con.query(
         /*sql*/
-        `UPDATE bodegas SET nombre = ?, id_responsable = ?, estado = ?, created_by = ?, update_by = ?, created_at = ?, updated_at = ?, deleted_at = ? WHERE id = ?`,
-        [nombre, id_responsable, estado, created_by, update_by, created_at, updated_at, deleted_at, id],
+        `UPDATE bodegas SET ?  WHERE id = ?`,
+        [req.body, req.params.id],
         (err, result) => {
             if (err) {
                 console.error('Error al actualizar la bodega:', err.message);
@@ -82,8 +54,7 @@ storageGbpBodegas.put("/:id", (req, res) => {
         }
     );
 });
-storageGbpBodegas.delete("/:id", (req, res) => {
-    const id = req.params.id;
+storageGbpBodegas.delete("/:id", proxyBodegas ,(req, res) => {
     con.query(
         /*sql*/
         `DELETE FROM bodegas WHERE id = ?`,
@@ -99,6 +70,5 @@ storageGbpBodegas.delete("/:id", (req, res) => {
     );
 });
 
-storageGbpBodegas.get("/", validate);
 
 export default storageGbpBodegas;

@@ -1,60 +1,32 @@
 import mysql from 'mysql2';
 import {Router} from 'express';
-import validate from '../controllers/historialesController.js';
+import proxyHistoriales from '../middleware/middlewareHistoriales.js';
 const storageGbpHistoriales = Router();
 let con = undefined;
 
-/* storageGbpHistoriales.use((req, res, next) => {
+storageGbpHistoriales.use((req, res, next) => {
 
     let myConfig = JSON.parse(process.env.MY_CONNECT);
     con = mysql.createPool(myConfig)
     next();
 })
 
-storageGbpHistoriales.get("/", (req, res) => {
-    con.query(
-        `SELECT historiales.*, users.created_by AS created_by, users.update_by AS update_by, inventarios.id AS id_inventario 
-        FROM historiales
-        INNER JOIN users ON historiales.created_by = users.id
-        INNER JOIN inventarios ON historiales.id_inventario = inventarios.id`,
-        (err, data, fil) => {
-            if (err) {
-                console.error('Error al obtener los historiales:', err.message);
-                res.sendStatus(500);
-            } else {
-                res.send(JSON.stringify(data));
-            }
+storageGbpHistoriales.get("/:id?", proxyHistoriales , (req,res)=>{
+    let sql = (req.params.id)
+        ? [`SELECT * FROM historiales WHERE ?`, req.params]
+        : [`SELECT * FROM historiales`];
+    con.query(...sql,
+        (err, data, fie)=>{
+            res.send(data);
         }
     );
-}); */
+})
 
-
-/* storageGbpHistoriales.get("/:id", (req, res) => {
-    const id = req.params.id;
-    con.query(
-        `SELECT historiales.*, users.created_by AS created_by, users.update_by AS update_by, inventarios.id AS id_inventario 
-        FROM historiales
-        INNER JOIN users ON historiales.created_by = users.id
-        INNER JOIN inventarios ON historiales.id_inventario = inventarios.id 
-        WHERE historiales.id = ?`, [id],
-        (err, data, fil) => {
-            if (err) {
-                console.error('Error al obtener el historial:', err.message);
-                res.sendStatus(500);
-            } else {
-                res.send(JSON.stringify(data));
-            }
-        }
-    );
-}); */
-
-
-storageGbpHistoriales.post("/", (req, res) => {
-    const {id,cantidad,id_bodega_origen,id_bodega_destino,id_inventario,estado,created_by,update_by,created_at,updated_at,deleted_at} = req.body;
+storageGbpHistoriales.post("/" ,proxyHistoriales ,(req, res) => {
     con.query(
         /*sql*/
-        `INSERT INTO historiales (id,cantidad,id_bodega_origen,id_bodega_destino,id_inventario,estado,created_by,update_by,created_at,updated_at,deleted_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-        [id,cantidad,id_bodega_origen,id_bodega_destino,id_inventario,estado,created_by,update_by,created_at,updated_at,deleted_at],
+        `INSERT INTO historiales SET ?`,
+        req.body,
         (err, result) => {
             if (err) {
                 console.error('Error al crear el historial:', err.message);
@@ -65,13 +37,11 @@ storageGbpHistoriales.post("/", (req, res) => {
         }
     );
 });
-storageGbpHistoriales.put("/:id", (req, res) => {
-    const id = req.params.id;
-    const {cantidad,id_bodega_origen,id_bodega_destino,id_inventario,estado,created_by,update_by,created_at,updated_at,deleted_at} = req.body;
+storageGbpHistoriales.put("/:id", proxyHistoriales ,(req, res) => {
     con.query(
         /*sql*/
-        `UPDATE historiales SET cantidad = ?,id_bodega_origen = ?,id_bodega_destino = ?,id_inventario = ?,estado = ?,created_by = ?,update_by = ?,created_at = ?,updated_at = ?,deleted_at = ? WHERE id = ?`,
-        [cantidad,id_bodega_origen,id_bodega_destino,id_inventario,estado,created_by,update_by,created_at,updated_at,deleted_at,id],
+        `UPDATE historiales SET ? WHERE id = ?`,
+        [req.body, req.params.id],
         (err, result) => {
             if (err) {
                 console.error('Error al actualizar el historial:', err.message);
@@ -82,12 +52,11 @@ storageGbpHistoriales.put("/:id", (req, res) => {
         }
     );
 });
-storageGbpHistoriales.delete("/:id", (req, res) => {
-    const id = req.params.id;
+storageGbpHistoriales.delete("/:id", proxyHistoriales ,(req, res) => {
     con.query(
         /*sql*/
-        `DELETE FROM historiales WHERE id = ?`,
-        [id],
+        `DELETE FROM historiales WHERE ?`,
+        req.params,
         (err, result) => {
             if (err) {
                 console.error('Error al eliminar el historial:', err.message);
@@ -99,6 +68,5 @@ storageGbpHistoriales.delete("/:id", (req, res) => {
     );
 });
 
-storageGbpHistoriales.get("/", validate);
 
 export default storageGbpHistoriales;
